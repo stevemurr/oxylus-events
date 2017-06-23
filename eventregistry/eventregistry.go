@@ -13,6 +13,8 @@ var (
 	ErrKeyNotFound = errors.New("key not found")
 	// ErrElementNotFound means the event id does not exist
 	ErrElementNotFound = errors.New("element not found in registry")
+	// ErrTimeIntervalLessThanZero means the time cant be scheduled
+	ErrTimeIntervalLessThanZero = errors.New("time intveral is less than zero")
 )
 
 // EventRegistry uses a uuid to key a list of events
@@ -40,14 +42,16 @@ func (e *EventRegistry) StartTimer(key, itemID string) error {
 	if err != nil {
 		return ErrElementNotFound
 	}
+	if event.TimeInterval <= 0 {
+		return ErrTimeIntervalLessThanZero
+	}
 	e.TimerStarted <- event.String()
 	event.Timer = time.AfterFunc(event.TimeInterval, func() {
 		e.TimerEnded <- event.String()
 		if err := event.Driver.Run(event.Action); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		if event.Repeats {
-			log.Println("repeating")
 			e.StartTimer(key, itemID)
 		}
 	})

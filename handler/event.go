@@ -56,7 +56,7 @@ func (h *Handler) CreateEvent(c echo.Context) error {
 
 	h.EventRegistry.Add(id, e)
 	if err = h.EventRegistry.StartTimer(id, e.UUID.String()); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	response.Event = e
 	response.Request = request

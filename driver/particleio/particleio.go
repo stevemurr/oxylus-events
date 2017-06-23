@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -72,7 +73,7 @@ func (p *ParticleIO) Get(action string, val interface{}) error {
 // Inversely, call Get when you just want to read sensor data
 func (p *ParticleIO) Run(action string) error {
 	if action == "test" {
-		fmt.Printf("%s test run method\n", p.Name())
+		log.Printf("[RUN] test method for %s\n", p.Name())
 		return nil
 	}
 

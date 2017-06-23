@@ -43,7 +43,7 @@ func (e *Event) StartTimer() error {
 }
 
 func (e *Event) String() string {
-	return fmt.Sprintf("%s %s %s %t %s\n", e.UUID.String(), e.Driver.Name(), e.Action, e.Repeats, e.FinishAt)
+	return fmt.Sprintf("%s %s %s %t %s", e.UUID.String(), e.Driver.Name(), e.Action, e.Repeats, e.FinishAt)
 }
 
 // New returns a new event
