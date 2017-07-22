@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"oxylus/eventregistry"
+	"oxylus/pollerregistry"
 	"oxylus/store/boltstore"
 
 	"github.com/labstack/echo"
@@ -11,8 +12,10 @@ import (
 type (
 	// Handler is our global state to the event registry and database
 	Handler struct {
-		EventRegistry *eventregistry.EventRegistry
-		Store         *boltstore.BoltStore
+		PollerRegistry *pollerregistry.PollerRegistry
+		EventRegistry  *eventregistry.EventRegistry
+		Store          *boltstore.BoltStore
+		Users          []string
 	}
 )
 

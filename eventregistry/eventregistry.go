@@ -45,8 +45,10 @@ func (e *EventRegistry) StartTimer(key, itemID string) error {
 	if event.TimeInterval <= 0 {
 		return ErrTimeIntervalLessThanZero
 	}
+	event.Status = "timer started"
 	e.TimerStarted <- event.String()
 	event.Timer = time.AfterFunc(event.TimeInterval, func() {
+		event.Status = "timer ended"
 		e.TimerEnded <- event.String()
 		if err := event.Driver.Run(event.Action); err != nil {
 			log.Println(err)
@@ -65,6 +67,7 @@ func (e *EventRegistry) StopTimer(key, itemID string) error {
 	if err != nil {
 		return ErrElementNotFound
 	}
+	event.Status = "timer stopped"
 	event.StopTimer()
 	e.TimerEnded <- event.String()
 	return nil

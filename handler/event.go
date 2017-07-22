@@ -29,6 +29,7 @@ type (
 		Repeats      bool              `json:"repeats"`
 		Driver       string            `json:"driver"`
 		DriverParams map[string]string `json:"driverParams"`
+		TimeInterval string            `json:"timeInterval"`
 	}
 	// EventResponse represents the response from the server after an event is created
 	EventResponse struct {
@@ -47,11 +48,17 @@ func (h *Handler) CreateEvent(c echo.Context) error {
 		return err
 	}
 	e := event.New()
-	e.FinishAt = time.Date(request.Date.Year, time.Month(request.Date.Month), request.Date.Day, request.Date.Hour, request.Date.Minute, request.Date.Second, 0, time.Local)
+	if request.TimeInterval == "" {
+		e.FinishAt = time.Date(request.Date.Year, time.Month(request.Date.Month), request.Date.Day, request.Date.Hour, request.Date.Minute, request.Date.Second, 0, time.Local)
+		e.TimeInterval = time.Until(e.FinishAt)
+	} else {
+		if e.TimeInterval, err = time.ParseDuration(request.TimeInterval); err != nil {
+			log.Println(err)
+		}
+	}
 	e.Action = request.Action
 	e.Driver = NewDriver(request.Driver, request.DriverParams)
 	e.Repeats = request.Repeats
-	e.TimeInterval = time.Until(e.FinishAt)
 	response := new(EventResponse)
 
 	h.EventRegistry.Add(id, e)
@@ -72,6 +79,35 @@ func (h *Handler) DeleteEvent(c echo.Context) error {
 	h.EventRegistry.StopTimer(id, ev)
 	h.EventRegistry.RemoveEvent(id, ev)
 	return c.NoContent(http.StatusOK)
+}
+
+// GetUserEvents will return all events for the user
+func (h *Handler) GetUserEvents(c echo.Context) error {
+	id := c.Param("id")
+	events := h.EventRegistry.GetAll(id)
+	var results = make([]*event.Event, len(events))
+	idx := 0
+	for _, value := range events {
+		results[idx] = value
+		idx++
+	}
+	return c.JSONPretty(http.StatusOK, results, "  ")
+}
+
+// GetUserEvent will return one event for the user
+func (h *Handler) GetUserEvent(c echo.Context) error {
+	id := c.Param("id")
+	ev := c.Param("event")
+	event, err := h.EventRegistry.Get(id, ev)
+	if err != nil {
+		return err
+	}
+	return c.JSONPretty(http.StatusOK, event, "  ")
+}
+
+// GetAllEvents will return all events in the registry
+func (h *Handler) GetAllEvents(c echo.Context) error {
+	return c.JSONPretty(http.StatusOK, h.EventRegistry.Registry, "  ")
 }
 
 // NewDriver returns the correct driver given a string

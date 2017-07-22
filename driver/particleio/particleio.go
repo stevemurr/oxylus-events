@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -49,24 +50,30 @@ func (p *ParticleIO) Raw(args ...string) error {
 // Get returns a response to the client with data
 // This is used internally to poll the sensors on a regular interval
 // The user pulls out data from the store api
-func (p *ParticleIO) Get(action string, val interface{}) error {
+func (p *ParticleIO) Get(action string) (interface{}, error) {
 	if action == "test" {
-		fmt.Println("test get method")
-		val = Response{}
-		return nil
+		r := &Response{}
+		r.CMD = "test"
+		r.Name = "Test"
+		r.Result = rand.Intn(100)
+		return r, nil
 	}
 	u := fmt.Sprintf("https://api.particle.io/v1/devices/%s/%s?access_token=%s", p.DeviceID, action, p.AccessToken)
 
 	resp, err := http.Get(u)
 	if err != nil {
-		return ErrGetRequestFailed
+		return nil, ErrGetRequestFailed
 	}
-	if err := json.NewDecoder(resp.Body).Decode(val); err != nil {
-		return err
+	var val Response
+	if err := json.NewDecoder(resp.Body).Decode(&val); err != nil {
+		return nil, err
 	}
+	ox := OxylusResponse{}
+	ox.Name = val.Name
+	ox.Value = strconv.Itoa(val.Result)
 	// Inject any data we want into the structure here
 	defer resp.Body.Close()
-	return nil
+	return &ox, nil
 }
 
 // Run implements the driver interface and is invoked when the user wants to alter state

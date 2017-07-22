@@ -24,6 +24,7 @@ type Event struct {
 	Repeats      bool          `json:"repeats"`
 	TimeInterval time.Duration `json:"timeInterval"`
 	Timer        *time.Timer   `json:"-"`
+	Status       string        `json:"status"`
 }
 
 // StopTimer attempts to stop the time and returns a bool indicating status
@@ -31,19 +32,9 @@ func (e *Event) StopTimer() bool {
 	return e.Timer.Stop()
 }
 
-// StartTimer starts the timer
-func (e *Event) StartTimer() error {
-	if e.TimeInterval <= 0.0 {
-		return ErrTimeIntervalNotPositive
-	}
-	if err := e.Driver.Run(e.Action); err != nil {
-		return err
-	}
-	return nil
-}
-
+// String returns this object as a string
 func (e *Event) String() string {
-	return fmt.Sprintf("%s %s %s %t %s", e.UUID.String(), e.Driver.Name(), e.Action, e.Repeats, e.FinishAt)
+	return fmt.Sprintf("%s %s %t %s", e.UUID.String(), e.Action, e.Repeats, e.FinishAt)
 }
 
 // New returns a new event
@@ -51,5 +42,6 @@ func New() *Event {
 	return &Event{
 		UUID:      uuid.NewV4(),
 		CreatedAt: time.Now(),
+		Status:    "created",
 	}
 }

@@ -38,6 +38,8 @@ func (b *BoltStore) Upsert(key string, val interface{}) error {
 
 // Find searches the database
 func (b *BoltStore) Find(field string, equal string, val interface{}) error {
-	b.store.Find(val, bolthold.Where(field).Eq(equal))
+	if err := b.store.Find(val, bolthold.Where(field).Eq(equal)); err != nil {
+		return err
+	}
 	return nil
 }

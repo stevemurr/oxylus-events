@@ -10,7 +10,7 @@ import (
 func TestPoller(t *testing.T) {
 	p := Poller{}
 	p.Action = "test"
-	p.Driver = particleio.NewDriver()
+	p.Driver = particleio.New()
 	p.C = make(chan interface{})
 	p.PollInterval = time.Second * 2
 	var response particleio.Response

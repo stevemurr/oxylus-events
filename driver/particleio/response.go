@@ -1,6 +1,9 @@
 package particleio
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 /*
 POST response
@@ -46,4 +49,19 @@ type coreInfo struct {
 	LastHandshakeAt time.Time `json:"last_handshake_at"`
 	DeviceID        string    `json:"deviceID"`
 	ProductID       int       `json:"product_id"`
+}
+
+func (r *Response) String() string {
+	return fmt.Sprintf("%s %s %d", r.CMD, r.Name, r.Result)
+}
+
+// OxylusResponse represents our response object that driver responses are converted to
+// before they are inserted to our db
+type OxylusResponse struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+func (o *OxylusResponse) String() string {
+	return fmt.Sprintf("%s %s", o.Name, o.Value)
 }
