@@ -38,7 +38,7 @@ GET response
 type Response struct {
 	CMD      string   `json:"cmd"`
 	Name     string   `json:"name"`
-	Result   int      `json:"result"`
+	Result   float64  `json:"result"`
 	CoreInfo coreInfo `json:"coreInfo"`
 }
 
@@ -52,16 +52,16 @@ type coreInfo struct {
 }
 
 func (r *Response) String() string {
-	return fmt.Sprintf("%s %s %d", r.CMD, r.Name, r.Result)
+	return fmt.Sprintf("%s %s %f", r.CMD, r.Name, r.Result)
 }
 
 // OxylusResponse represents our response object that driver responses are converted to
 // before they are inserted to our db
 type OxylusResponse struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string  `json:"name"`
+	Value float64 `json:"value"`
 }
 
 func (o *OxylusResponse) String() string {
-	return fmt.Sprintf("%s %s", o.Name, o.Value)
+	return fmt.Sprintf("%s %f", o.Name, o.Value)
 }

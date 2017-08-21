@@ -6,6 +6,8 @@ import (
 	"oxylus/pollerregistry"
 	"oxylus/store/boltstore"
 
+	mgo "gopkg.in/mgo.v2"
+
 	"github.com/labstack/echo"
 )
 
@@ -15,6 +17,7 @@ type (
 		PollerRegistry *pollerregistry.PollerRegistry
 		EventRegistry  *eventregistry.EventRegistry
 		Store          *boltstore.BoltStore
+		DB             *mgo.Session
 		Users          []string
 	}
 )

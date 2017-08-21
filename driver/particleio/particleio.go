@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -51,15 +50,14 @@ func (p *ParticleIO) Raw(args ...string) error {
 // This is used internally to poll the sensors on a regular interval
 // The user pulls out data from the store api
 func (p *ParticleIO) Get(action string) (interface{}, error) {
-	if action == "test" {
-		r := &Response{}
-		r.CMD = "test"
-		r.Name = "Test"
-		r.Result = rand.Intn(100)
-		return r, nil
-	}
+	// if action == "test" {
+	// 	r := &Response{}
+	// 	r.CMD = "test"
+	// 	r.Name = "Test"
+	// 	r.Result = rand.Intn(100)
+	// 	return r, nil
+	// }
 	u := fmt.Sprintf("https://api.particle.io/v1/devices/%s/%s?access_token=%s", p.DeviceID, action, p.AccessToken)
-
 	resp, err := http.Get(u)
 	if err != nil {
 		return nil, ErrGetRequestFailed
@@ -70,7 +68,8 @@ func (p *ParticleIO) Get(action string) (interface{}, error) {
 	}
 	ox := OxylusResponse{}
 	ox.Name = val.Name
-	ox.Value = strconv.Itoa(val.Result)
+	ox.Value = val.Result
+	// ox.Value = strconv.Itoa(val.Result)
 	// Inject any data we want into the structure here
 	defer resp.Body.Close()
 	return &ox, nil
